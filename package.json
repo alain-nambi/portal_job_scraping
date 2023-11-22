@@ -1,0 +1,30 @@
+{
+  "name": "portal_job_scraping",
+  "version": "1.0.0",
+  "description": "A script that scrape all data and informations aroud web development jobs",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/alain-nambi/portal_job_scraping.git"
+  },
+  "author": "Alain-Nambii",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/alain-nambi/portal_job_scraping/issues"
+  },
+  "homepage": "https://github.com/alain-nambi/portal_job_scraping#readme",
+  "dependencies": {
+    "axios": "^1.6.2",
+    "chalk": "^5.3.0",
+    "cheerio": "^1.0.0-rc.12",
+    "docxtemplater": "^3.42.1",
+    "exceljs": "^4.4.0",
+    "ora": "^7.0.1",
+    "papaparse": "^5.4.1",
+    "pdfkit": "^0.14.0"
+  }
+}
