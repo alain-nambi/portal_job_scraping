@@ -24,9 +24,14 @@ const exportToPDF = (data, fileName) => {
       doc.fontSize(12).text(`Titre : ${job.title}`);
       doc.fontSize(12).text(`Entreprise : ${job.company}`);
       doc.fontSize(12).text(`Type de contrat : ${job.contractType}`);
-      doc.fontSize(12).text(`Date de l'annonce : ${job.dateAnnonce}`);
+      if (job.dateAnnonce) {
+        doc.fontSize(12).text(`Date de l'annonce : ${job.dateAnnonce}`);
+      }
       doc.fontSize(12).text(`URL : ${job.link}`);
-      doc.fontSize(12).text(`Description : ${job.details}`);
+      doc
+        .fontSize(12)
+        .text(`Description`, { underline: true })
+        .text(job.details)
       doc.moveDown();
     });
 
