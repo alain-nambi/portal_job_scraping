@@ -40,7 +40,7 @@ const scrapeJobData = async () => {
 
   try {
     const jobLists = [];
-    const pageList = 10;
+    const pageList = 5;
 
     for (let i = 0; i <= pageList; i++) {
       const result = await axios.get(webDevUrl + i);
@@ -50,7 +50,7 @@ const scrapeJobData = async () => {
 
         if (itemAnnounce) {
           itemAnnounce.each(async function (_index, annonce) {
-            const jobData = await extractJobData($(annonce));
+            const { jobData } = await extractJobData($(annonce));
 
             if (jobData.title && jobData.company && jobData.contractType) {
               jobLists.push(jobData);
