@@ -20,29 +20,39 @@ const extractJobDetails = async (jobDataURL) => {
       }
     }
   } catch (error) {
-    console.error(error.message);
+    console.error("Error extracting job details : " + error.message);
+    throw error;
   }
 };
 
 const extractJobData = async ($annonce) => {
-  const title = findTextByHTMLTag($annonce, "h3");
-  const company = findTextByHTMLTag($annonce, "h4");
-  const contractType = findTextByHTMLTag($annonce, "h5");
-  const link = $annonce
-    .find(contenuAnnonceSelector)
-    .find("h3 > a")
-    .attr("href");
-  const dateAnnonce = formatDate($annonce.find(".date_annonce > .date").text());
-  const { cleanText } = await extractJobDetails(link);
+  try {
+    const title = findTextByHTMLTag($annonce, "h3");
+    const company = findTextByHTMLTag($annonce, "h4");
+    const contractType = findTextByHTMLTag($annonce, "h5");
+    const link = $annonce
+      .find(contenuAnnonceSelector)
+      .find("h3 > a")
+      .attr("href");
+    const dateAnnonce = formatDate(
+      $annonce.find(".date_annonce > .date").text()
+    );
+    const { cleanText } = await extractJobDetails(link);
 
-  return {
-    title,
-    company,
-    contractType,
-    link,
-    dateAnnonce,
-    details: cleanText,
-  };
+    const jobData = {
+      title: title,
+      company: company,
+      contractType: contractType,
+      link: link,
+      dateAnnonce: dateAnnonce,
+      details: cleanText,
+    };
+
+    return { jobData };
+  } catch (error) {
+    console.error("Error extracting job data : " + error.message);
+    throw error;
+  }
 };
 
 export { extractJobData };
