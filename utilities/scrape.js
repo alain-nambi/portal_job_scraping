@@ -2,6 +2,7 @@ import cheerio from "cheerio";
 import axios from "axios";
 import chalk from "chalk";
 import ora from "ora";
+import prompts from "prompts";
 import {
   contenuAnnonceSelector,
   itemAnnonceSelector,
@@ -28,57 +29,72 @@ const findTextByHTMLTag = ($annonce, HTMLTag) => {
 };
 
 const scrapeJobData = async () => {
-  const loadingSpinnerScrapping = ora({
-    text: chalk.white(
-      "Récupération des données sur les offres d'emploi en ligne..."
-    ),
-    spinner: "dots",
-    color: "white",
-  });
-
-  loadingSpinnerScrapping.start();
+  const howManyPages = async () => {
+    const page = await prompts({
+      type: "number",
+      name: "number",
+      message: "Combien de pages voudrais-tu récupérer ?"
+    })
+    return page.number > 0 ? page.number : await howManyPages() // recursively call the functions
+  }
 
   try {
+    const pageNumber = await howManyPages()
     const jobLists = [];
-    const pageList = 5;
 
-    for (let i = 0; i <= pageList; i++) {
-      const result = await axios.get(webDevUrl + i);
-      if (result.data) {
-        const $ = cheerio.load(result.data);
-        const itemAnnounce = $(itemAnnonceSelector);
+    if (pageNumber) {
+      const loadingSpinnerScrapping = ora({
+        text: chalk.white(
+          "Récupération des données sur les offres d'emploi en ligne..."
+        ),
+        spinner: "dots",
+        color: "white",
+      });
+    
+      loadingSpinnerScrapping.start();
 
-        if (itemAnnounce) {
-          itemAnnounce.each(async function (_index, annonce) {
-            const { jobData } = await extractJobData($(annonce));
 
-            if (jobData.title && jobData.company && jobData.contractType) {
-              jobLists.push(jobData);
-            }
-          });
+      for (let i = 0; i <= pageNumber; i++) {
+        const result = await axios.get(webDevUrl + i);
+        if (result.data) {
+          const $ = cheerio.load(result.data);
+          const itemAnnounce = $(itemAnnonceSelector);
+  
+          if (itemAnnounce) {
+            itemAnnounce.each(async function (_index, annonce) {
+              const { jobData } = await extractJobData($(annonce));
+  
+              if (jobData.title && jobData.company && jobData.contractType) {
+                jobLists.push(jobData);
+              }
+            });
+          }
         }
       }
-    }
 
-    if (jobLists) {
-      loadingSpinnerScrapping.succeed(
-        chalk.white("Récupération des données terminées !")
-      );
-
-      exportToPDF(jobLists, uniqueFileName());
+      if (jobLists) {
+        loadingSpinnerScrapping.succeed(
+          chalk.white("Récupération des données terminées !")
+        );
+  
+        exportToPDF(jobLists, uniqueFileName());
+      } else {
+        loadingSpinnerScrapping.fail(
+          chalk.redBright(
+            "Aucune donnée récupérée. Veuillez vérifier l'URL ou réessayer plus tard"
+          )
+        );
+      }
     } else {
-      loadingSpinnerScrapping.fail(
-        chalk.redBright(
-          "Aucune donnée récupérée. Veuillez vérifier l'URL ou réessayer plus tard"
-        )
-      );
+      console.log('No page');
+      return howManyPages()
     }
+
   } catch (error) {
     chalk.redBright(
       "\n Une erreur s'est produite lors de la récupération des données"
     );
     console.error(error.message);
-    loadingSpinnerScrapping.stop();
   }
 };
 
