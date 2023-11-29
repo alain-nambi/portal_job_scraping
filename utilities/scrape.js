@@ -29,6 +29,7 @@ const findTextByHTMLTag = ($annonce, HTMLTag) => {
 };
 
 const scrapeJobData = async () => {
+  console.time("Testing performance for scraping")
   const howManyPages = async () => {
     const page = await prompts({
       type: "number",
@@ -82,20 +83,21 @@ const scrapeJobData = async () => {
         loadingSpinnerScrapping.fail(
           chalk.redBright(
             "Aucune donnée récupérée. Veuillez vérifier l'URL ou réessayer plus tard"
-          )
-        );
-      }
-    } else {
-      console.log('No page');
-      return howManyPages()
-    }
-
-  } catch (error) {
-    chalk.redBright(
-      "\n Une erreur s'est produite lors de la récupération des données"
-    );
-    console.error(error.message);
-  }
+            )
+            );
+          }
+        } else {
+          console.log('No page');
+          return howManyPages()
+        }
+        
+      } catch (error) {
+        chalk.redBright(
+          "\n Une erreur s'est produite lors de la récupération des données"
+          );
+          console.error(error.message);
+        }
+  console.timeEnd("Testing performance for scraping")
 };
 
 export { findTextByHTMLTag, scrapeJobData };
