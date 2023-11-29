@@ -2,17 +2,7 @@ import fs from "fs";
 import Papa from "papaparse";
 import PDFDocument from "pdfkit";
 import chalk from "chalk";
-
-const formatBulletedList = (jobDetails) => {
-  try {
-    if (jobDetails) {
-      return jobDetails.replace(/ • /g, "\n• ").replace(/ - /g, "\n- ");
-    }
-  } catch (error) {
-    console.error("Error on formating bulleted list", error.message);
-    throw error;
-  }
-};
+import { formatNumberedList } from "./format.js";
 
 const exportToPDF = (data, fileName) => {
   const doc = new PDFDocument();
@@ -42,7 +32,7 @@ const exportToPDF = (data, fileName) => {
       doc
         .fontSize(12)
         .text(`Description`, { underline: true })
-        .text(formatBulletedList(job.details));
+        .text(formatNumberedList(job.details));
       doc.moveDown();
     });
 
